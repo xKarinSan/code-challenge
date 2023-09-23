@@ -23,17 +23,16 @@ Questions attempted:
 ## Notes
 
 For Problem 1:
-
 - Answer is in ``main.js`` in the ``problem1`` folder.
 
 For Problem 2:
-
-1. Type this in the terminal: ``cd src/problem2/frontend``
-2. Next, type this in the terminal: ``npm i``
-3. After that, type this in the terminal ``npm run dev``
+- ``Assumptions.md`` lists all the assumptions made for Problem 2.
+- Below are the steps to run the code:
+    1. Type this in the terminal: ``cd src/problem2/frontend``
+    2. Next, type this in the terminal: ``npm i``
+    3. After that, type this in the terminal ``npm run dev``
 
 For Problem 3:
-
 - ``Changes.md`` lists all the changes and assumptions made from the original code
 - ``original.ts`` is the original, unchanged code
 - ``refactored.ts`` is the refactored code
