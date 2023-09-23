@@ -1,9 +1,12 @@
+// =================== imports ===================
+// ======== react ========
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
+
+// ======== chakraUI ========
+
 import {
-    Box,
-    Input,
     useToast,
     Card,
     Heading,
@@ -18,23 +21,19 @@ import {
     ModalCloseButton,
     ModalBody,
     ModalContent,
-    NumberInputField,
-    NumberInput,
     Progress,
 } from "@chakra-ui/react";
-import { IoSwapVerticalSharp, IoArrowDown } from "react-icons/io5";
 
-type CurrencyDetails = {
-    date: string;
-    price: number;
-};
+// ========== components ==========
+import { CustomNumberInput } from "./components/CustomNumberInput";
 
-type Currency = {
-    // name is unique
-    currency: string;
-    date: string;
-    price: number;
-};
+// ========== icons ==========
+import { IoSwapVerticalSharp } from "react-icons/io5";
+
+// ======== types ========
+import { CurrencyDetails, Currency } from "./types/CurrencyTypes";
+
+// =================== main function ===================
 
 function App() {
     // =================== constants ===================
@@ -48,7 +47,7 @@ function App() {
     const [loading, setLoading] = useState<boolean>(false);
 
     const [allCurrencies, setAllCurrencies] = useState<Currency[]>([]);
-    const [giveCurrency, setGiveCurrency] = useState<Currency | null>();
+    const [giveCurrency, setGiveCurrency] = useState<Currency | null>(null);
 
     const [giveCurrencyValue, setGiveCurrencyValue] = useState<number>(0);
 
@@ -61,7 +60,7 @@ function App() {
     // check if this is for "You Pay" or "You Get"
     const [isPayingCurrency, setIsPayingCurrency] = useState<boolean>(false);
 
-    // =================== functions ===================
+    // =================== main functions ===================
     // ======== swaps the currencies ========
     const swapCurrencies = () => {
         if (receiveCurrency && giveCurrency) {
@@ -87,14 +86,14 @@ function App() {
         setIsPayingCurrency(currencyMode);
         onOpen();
     };
-    // closes modal
-    const closeCurrencyModal = () => {
-        onClose();
-    };
 
     // ======== submit swap ========
     const submitSwap = () => {
-        if (giveCurrency && receiveCurrency && giveCurrencyValue) {
+        if (
+            giveCurrency &&
+            receiveCurrency &&
+            parseFloat(giveCurrencyValue.toString())
+        ) {
             const { price: givePrice } = giveCurrency;
             const { price: receivePrice } = receiveCurrency;
             // conver to 5dp
@@ -203,56 +202,16 @@ function App() {
                         >
                             Currency Swapper
                         </Heading>
-                        <Card
-                            width="100%"
-                            margin="5px auto"
-                            background="#14223D"
-                            padding="10px"
-                        >
-                            <Text
-                                color="white"
-                                margin="5px"
-                                textAlign={"left"}
-                                variant="subtitle2"
-                                fontSize="13px"
-                            >
-                                You pay
-                            </Text>
-                            <Box display="flex">
-                                <NumberInput
-                                    focusBorderColor="none"
-                                    min={0}
-                                    defaultValue={0}
-                                    color="white"
-                                >
-                                    <NumberInputField
-                                        border="none"
-                                        padding="5px"
-                                        fontSize="35px"
-                                        value={giveCurrencyValue}
-                                        onChange={(e) =>
-                                            setGiveCurrencyValue(
-                                                parseInt(e.target.value)
-                                            )
-                                        }
-                                    />
-                                </NumberInput>
-                                <Tooltip label="Select a currency">
-                                    <Button
-                                        rightIcon={<IoArrowDown />}
-                                        onClick={() => openCurrencyModal(true)}
-                                        borderRadius={"25px"}
-                                        background={"#4E73FD"}
-                                        color="white"
-                                        _hover={{ background: "#2852EC" }}
-                                    >
-                                        {giveCurrency
-                                            ? giveCurrency.currency
-                                            : "Currency"}
-                                    </Button>
-                                </Tooltip>
-                            </Box>
-                        </Card>
+                        <CustomNumberInput
+                            isDisabled={false}
+                            label={"You pay"}
+                            value={giveCurrencyValue}
+                            currentCurrency={giveCurrency}
+                            isPayingCurrency={true}
+                            valueChangeHandler={setGiveCurrencyValue}
+                            openCurrencyModalFunction={openCurrencyModal}
+                        />
+
                         <Tooltip label="Swap currencies">
                             <IconButton
                                 icon={<IoSwapVerticalSharp color="white" />}
@@ -264,57 +223,15 @@ function App() {
                                 onClick={swapCurrencies}
                             />
                         </Tooltip>
-                        <Card
-                            width="100%"
-                            margin="5px auto"
-                            background="#14223D"
-                            padding="10px"
-                        >
-                            <Text
-                                color="white"
-                                margin="5px"
-                                textAlign={"left"}
-                                variant="subtitle2"
-                                fontSize="13px"
-                            >
-                                You get
-                            </Text>
-                            <Box display="flex">
-                                <NumberInput
-                                    focusBorderColor="none"
-                                    min={0}
-                                    color="white"
-                                    value={receiveCurrencyValue}
-                                >
-                                    <NumberInputField
-                                        border="none"
-                                        padding="5px"
-                                        fontSize="35px"
-                                        onChange={(e) =>
-                                            setReceiveCurrencyValue(
-                                                parseInt(e.target.value)
-                                            )
-                                        }
-                                        disabled
-                                        _disabled={{ color: "white" }}
-                                    />
-                                </NumberInput>
-                                <Tooltip label="Select a currency">
-                                    <Button
-                                        rightIcon={<IoArrowDown />}
-                                        borderRadius={"25px"}
-                                        onClick={() => openCurrencyModal(false)}
-                                        background={"#4E73FD"}
-                                        color="white"
-                                        _hover={{ background: "#2852EC" }}
-                                    >
-                                        {receiveCurrency
-                                            ? receiveCurrency.currency
-                                            : "Currency"}
-                                    </Button>
-                                </Tooltip>
-                            </Box>
-                        </Card>
+                        <CustomNumberInput
+                            isDisabled={true}
+                            label={"You get"}
+                            value={receiveCurrencyValue}
+                            currentCurrency={receiveCurrency}
+                            isPayingCurrency={false}
+                            valueChangeHandler={setReceiveCurrencyValue}
+                            openCurrencyModalFunction={openCurrencyModal}
+                        />
                         <Button
                             borderRadius={"5px"}
                             color="white"
@@ -371,7 +288,7 @@ function App() {
                                                 currency.currency
                                             ) {
                                                 setGiveCurrency(currency);
-                                                closeCurrencyModal();
+                                                onClose();
                                             }
                                         } else {
                                             if (
@@ -379,7 +296,7 @@ function App() {
                                                 currency.currency
                                             ) {
                                                 setReceiveCurrency(currency);
-                                                closeCurrencyModal();
+                                                onClose();
                                             }
                                         }
                                     }}
